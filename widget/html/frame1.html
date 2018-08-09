@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>注册</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <style>
+        header{
+          width: 100%;
+          height: 50px;
+          background-color: #008ef3
+        }
+
+        header h1{
+          width:100%;
+          height: 25px;
+          line-height: 25px;
+          text-align: center;
+          color:#fff;
+          font-size: 20px;
+        }
+
+        header h2{
+          width:100%;
+          height: 25px;
+          line-height: 25px;
+          text-align: center;
+          color:#000;
+          font-size: 15px;
+        }
+
+        .row{
+          width:auto;
+          height: 70px;
+          box-sizing: border-box;
+          margin-left: 32px;
+          margin-right: 32px;
+          padding-top:40px;
+          border-bottom:1px solid #888;
+        }
+
+        .input{
+          width:100%；
+          height:20px;
+          border: none;
+          outline: none;
+          font-size: 16px;
+          line-height: 20px;
+        }
+
+        .btn{
+          width:auto;
+          height: 25px;
+          margin-left: 50px;
+          margin-right: 50px;
+          margin-top:32px;
+          background-color:#008ef3;
+          line-height: 20px;
+          color: #fff;
+          font-size: 15px;
+          text-align: center;
+          border-radius: 8px;
+        }
+
+        .highlight{
+          opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+      <h1>注册</h1>
+      <h2>警察版</h2>
+    </header>
+    <div class="row">
+      <input id="username" class="input" type="text" placeholder="姓名">
+    </div>
+    <div class="row">
+      <input id="policeID" class="input" type="text" placeholder="警号">
+    </div>
+    <div class="row">
+      <input id="administration" class="input" type="text" placeholder="所属单位">
+    </div>
+    <div class="row">
+      <input id="ID" class="input" type="text" placeholder="身份证号">
+    </div>
+    <div class="row">
+      <input id="mobile" class="input" type="text" placeholder="手机号">
+    </div>
+    <div class="row">
+      <input id="password" class="input" type="password" placeholder="密码">
+    </div>
+    <div class="btn" tapmode="highlight" onclick="fnRegister();">注册</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/APICloud-rest.js"></script>
+<script type="text/javascript" src="../script/SHA1.js"></script>
+<script type="text/javascript">
+apiready = function() {
+    fnInitUIInput();
+};
+
+var UIInput;
+var usernameUIInputId;
+var passwordUIInputId;
+var policeIDUIInputId;
+var administrationUIInputId;
+var IDUIInputId;
+var mobileUIInputId;
+
+var policeIDValue;
+var administrationValue;
+var IDValue;
+var mobileValue;
+var usernameValue;
+var passwordValue;
+
+function fnInitUIInput() {
+    // 用户名输入框模块
+    var username = $api.byId('username');
+    var usernameRect = $api.offset(username);
+    UIInput = api.require('UIInput');
+    UIInput.open({
+        rect: {
+            x: usernameRect.l,
+            y: usernameRect.t,
+            w: usernameRect.w,
+            h: usernameRect.h
+        },
+        styles: {
+            bgColor: '#fff',
+            size: 16,
+            color: '#000',
+            placeholder: {
+                color: '#ccc'
+            }
+        },
+        autoFocus: false,
+        maxRows: 1,
+        placeholder: '用户名',
+        keyboardType: 'default',
+        fixedOn: api.frameName
+    }, function(ret, err) {
+        if (ret) {
+            usernameUIInputId = ret.id;
+            if (ret && ret.eventType == "show") {
+                setTimeout(function() {
+                    UIInput.popupKeyboard({
+                        id: usernameUIInputId
+                    });
+                }, 200);
+            } else if (ret.eventType == "change") {
+                UIInput.value({
+                    id: usernameUIInputId
+                }, function(ret, err) {
+                    if (ret) {
+                        if (ret.status) {
+                            usernameValue = ret.msg;
+                        }
+                    }
+                });
+            }
+        }
+    });
+
+    // 密码输入框模块
+    var password = $api.byId('password');
+    var passwordRect = $api.offset(password);
+    UIInput.open({
+        rect: {
+            x: passwordRect.l,
+            y: passwordRect.t,
+            w: passwordRect.w,
+            h: passwordRect.h
+        },
+        styles: {
+            bgColor: '#fff',
+            size: 16,
+            color: '#000',
+            placeholder: {
+                color: '#ccc'
+            }
+        },
+        autoFocus: false,
+        maxRows: 1,
+        placeholder: '密码',
+        keyboardType: 'default',
+        inputType: 'password',
+        fixedOn: api.frameName
+    }, function(ret, err) {
+        if (ret) {
+            passwordUIInputId = ret.id;
+            if (ret.eventType == "change") {
+                UIInput.value({
+                    id: passwordUIInputId
+                }, function(ret, err) {
+                    if (ret) {
+                        if (ret.status) {
+                            passwordValue = ret.msg;
+                        }
+                    }
+                });
+            }
+        }
+    });
+
+    // 警号输入框模块
+    var policeID = $api.byId('policeID');
+    var policeIDRect = $api.offset(policeID);
+    UIInput = api.require('UIInput');
+    UIInput.open({
+        rect: {
+            x: policeIDRect.l,
+            y: policeIDRect.t,
+            w: policeIDRect.w,
+            h: policeIDRect.h
+        },
+        styles: {
+            bgColor: '#fff',
+            size: 16,
+            color: '#000',
+            placeholder: {
+                color: '#ccc'
+            }
+        },
+        autoFocus: false,
+        maxRows: 1,
+        placeholder: '警号',
+        keyboardType: 'default',
+        fixedOn: api.frameName
+    }, function(ret, err) {
+        if (ret) {
+            policeIDUIInputId = ret.id;
+            if (ret && ret.eventType == "show") {
+                setTimeout(function() {
+                    UIInput.popupKeyboard({
+                        id: policeIDUIInputId
+                    });
+                }, 200);
+            } else if (ret.eventType == "change") {
+                UIInput.value({
+                    id: policeIDUIInputId
+                }, function(ret, err) {
+                    if (ret) {
+                        if (ret.status) {
+                            policeIDValue = ret.msg;
+                        }
+                    }
+                });
+            }
+        }
+    });
+    // 所处单位输入框模块
+    var administration = $api.byId('administration');
+    var administrationRect = $api.offset(administration);
+    UIInput = api.require('UIInput');
+    UIInput.open({
+        rect: {
+            x: administrationRect.l,
+            y: administrationRect.t,
+            w: administrationRect.w,
+            h: administrationRect.h
+        },
+        styles: {
+            bgColor: '#fff',
+            size: 16,
+            color: '#000',
+            placeholder: {
+                color: '#ccc'
+            }
+        },
+        autoFocus: false,
+        maxRows: 1,
+        placeholder: '所处单位',
+        keyboardType: 'default',
+        fixedOn: api.frameName
+    }, function(ret, err) {
+        if (ret) {
+            administrationUIInputId = ret.id;
+            if (ret && ret.eventType == "show") {
+                setTimeout(function() {
+                    UIInput.popupKeyboard({
+                        id: administrationUIInputId
+                    });
+                }, 200);
+            } else if (ret.eventType == "change") {
+                UIInput.value({
+                    id: administrationUIInputId
+                }, function(ret, err) {
+                    if (ret) {
+                        if (ret.status) {
+                            administrationValue = ret.msg;
+                        }
+                    }
+                });
+            }
+        }
+    });
+    // 身份证号输入框模块
+    var personalID = $api.byId('ID');
+    var IDRect = $api.offset(personalID);
+    UIInput = api.require('UIInput');
+    UIInput.open({
+        rect: {
+            x: IDRect.l,
+            y: IDRect.t,
+            w: IDRect.w,
+            h: IDRect.h
+        },
+        styles: {
+            bgColor: '#fff',
+            size: 16,
+            color: '#000',
+            placeholder: {
+                color: '#ccc'
+            }
+        },
+        autoFocus: false,
+        maxRows: 1,
+        placeholder: '身份证号',
+        keyboardType: 'default',
+        fixedOn: api.frameName
+    }, function(ret, err) {
+        if (ret) {
+            IDUIInputId = ret.id;
+            if (ret && ret.eventType == "show") {
+                setTimeout(function() {
+                    UIInput.popupKeyboard({
+                        id: IDUIInputId
+                    });
+                }, 200);
+            } else if (ret.eventType == "change") {
+                UIInput.value({
+                    id: IDUIInputId
+                }, function(ret, err) {
+                    if (ret) {
+                        if (ret.status) {
+                            IDValue = ret.msg;
+                        }
+                    }
+                });
+            }
+        }
+    });// 手机号输入框模块
+    var mobile = $api.byId('mobile');
+    var mobileRect = $api.offset(mobile);
+    UIInput = api.require('UIInput');
+    UIInput.open({
+        rect: {
+            x: mobileRect.l,
+            y: mobileRect.t,
+            w: mobileRect.w,
+            h: mobileRect.h
+        },
+        styles: {
+            bgColor: '#fff',
+            size: 16,
+            color: '#000',
+            placeholder: {
+                color: '#ccc'
+            }
+        },
+        autoFocus: false,
+        maxRows: 1,
+        placeholder: '手机号',
+        keyboardType: 'default',
+        fixedOn: api.frameName
+    }, function(ret, err) {
+        if (ret) {
+            mobileUIInputId = ret.id;
+            if (ret && ret.eventType == "show") {
+                setTimeout(function() {
+                    UIInput.popupKeyboard({
+                        id: mobileUIInputId
+                    });
+                }, 200);
+            } else if (ret.eventType == "change") {
+                UIInput.value({
+                    id: mobileUIInputId
+                }, function(ret, err) {
+                    if (ret) {
+                        if (ret.status) {
+                            mobileValue = ret.msg;
+                        }
+                    }
+                });
+            }
+        }
+    });
+}
+
+// 如果使用APICloud数据云，可以使用APICloud数据云前端框架来简化网络通信
+function fnRegisterByAPICloudMCM() {
+    if (!usernameValue) {
+        if (api.systemType == 'android') {
+            setTimeout(function() {
+                UIInput.popupKeyboard({
+                    id: usernameUIInputId
+                });
+            }, 200);
+        } else {
+            UIInput.popupKeyboard({
+                id: usernameUIInputId
+            });
+        }
+        return;
+    }
+    if (!IDValue) {
+        if (api.systemType == 'android') {
+            setTimeout(function() {
+                UIInput.popupKeyboard({
+                    id: IDUIInputId
+                });
+            }, 200);
+        } else {
+            UIInput.popupKeyboard({
+                id: IDUIInputId
+            });
+        }
+        return;
+    }
+    if (!mobileValue) {
+        if (api.systemType == 'android') {
+            setTimeout(function() {
+                UIInput.popupKeyboard({
+                    id: mobileUIInputId
+                });
+            }, 200);
+        } else {
+            UIInput.popupKeyboard({
+                id: mobileUIInputId
+            });
+        }
+        return;
+    }
+    if (!administrationValue) {
+        if (api.systemType == 'android') {
+            setTimeout(function() {
+                UIInput.popupKeyboard({
+                    id: administrationUIInputId
+                });
+            }, 200);
+        } else {
+            UIInput.popupKeyboard({
+                id: administrationUIInputId
+            });
+        }
+        return;
+    }
+    if (!policeIDValue) {
+        if (api.systemType == 'android') {
+            setTimeout(function() {
+                UIInput.popupKeyboard({
+                    id: policeIDUIInputId
+                });
+            }, 200);
+        } else {
+            UIInput.popupKeyboard({
+                id: policeIDUIInputId
+            });
+        }
+        return;
+    }
+    if (!passwordValue) {
+        if (api.systemType == 'android') {
+            setTimeout(function() {
+                UIInput.popupKeyboard({
+                    id: passwordUIInputId
+                });
+            }, 200);
+        } else {
+            UIInput.popupKeyboard({
+                id: passwordUIInputId
+            });
+        }
+        return;
+    }
+
+    // 使用APICloud MCM JS Framework来与数据云通信
+    var client = new Resource("A6088900747259", "3A8E99FE-0AC5-F2E0-C011-65016FB96637");
+    var User = client.Factory("user");
+    User.save({
+        "username": usernameValue,
+        "password": passwordValue,
+        "policeID":policeIDValue,
+        "ID":IDValue,
+        "mobile":mobileValue,
+        "administration":administrationValue
+    }, function(ret, err) {
+        api.alert({
+            title: '提示',
+            msg: '注册成功',
+        }, function(ret, err) {
+            if (ret) {
+                // 跨窗口执行Script, 将用户名传给登录页面
+                api.execScript({
+                    name: 'frame0',
+                    frameName: 'frame0',
+                    script: 'fnSetUsername(\"' + usernameValue + '\");'
+                });
+                api.openFrame({
+                  name:'login',
+                  url:'./frame0.html',
+                  pageParam:{
+                  name:'test'
+                  }
+                });
+            } else {
+                alert("注册失败，用户名已被占用");
+            }
+        });
+    })
+}
+
+// 注册
+function fnRegister() {
+    if (!usernameValue) {
+        if (api.systemType == 'android') {
+            setTimeout(function() {
+                UIInput.popupKeyboard({
+                    id: usernameUIInputId
+                });
+            }, 200);
+        } else {
+            UIInput.popupKeyboard({
+                id: usernameUIInputId
+            });
+        }
+        return;
+    }
+    if (!passwordValue) {
+        if (api.systemType == 'android') {
+            setTimeout(function() {
+                UIInput.popupKeyboard({
+                    id: passwordUIInputId
+                });
+            }, 200);
+        } else {
+            UIInput.popupKeyboard({
+                id: passwordUIInputId
+            });
+        }
+        return;
+    }
+    if (!policeIDValue) {
+        if (api.systemType == 'android') {
+            setTimeout(function() {
+                UIInput.popupKeyboard({
+                    id: policeIDUIInputId
+                });
+            }, 200);
+        } else {
+            UIInput.popupKeyboard({
+                id: policeIDUIInputId
+            });
+        }
+        return;
+    }
+    if (!IDValue) {
+        if (api.systemType == 'android') {
+            setTimeout(function() {
+                UIInput.popupKeyboard({
+                    id: IDUIInputId
+                });
+            }, 200);
+        } else {
+            UIInput.popupKeyboard({
+                id: IDUIInputId
+            });
+        }
+        return;
+    }
+    if (!mobileValue) {
+        if (api.systemType == 'android') {
+            setTimeout(function() {
+                UIInput.popupKeyboard({
+                    id: mobileUIInputId
+                });
+            }, 200);
+        } else {
+            UIInput.popupKeyboard({
+                id: mobileUIInputId
+            });
+        }
+        return;
+    }
+    if (!administrationValue) {
+        if (api.systemType == 'android') {
+            setTimeout(function() {
+                UIInput.popupKeyboard({
+                    id: administrationUIInputId
+                });
+            }, 200);
+        } else {
+            UIInput.popupKeyboard({
+                id: administrationUIInputId
+            });
+        }
+        return;
+    }
+    api.ajax({
+        url: 'https://d.apicloud.com/mcm/api/user',
+        method: 'post',
+        headers: {
+            "X-APICloud-AppId": " A6088900747259",
+            "X-APICloud-AppKey": "3A8E99FE-0AC5-F2E0-C011-65016FB96637"
+        },
+        data: {
+            values: {
+                "username": usernameValue,
+                "password": passwordValue,
+                "policeID":policeIDValue,
+                "ID":IDValue,
+                "administration":administrationValue,
+                "mobile":mobileValue
+            }
+        }
+    }, function(ret, err) {
+        if (ret && ret.id) {
+            api.alert({
+                title: '提示',
+                msg: '注册成功',
+            }, function(ret, err) {
+                if (ret) {
+                    // 跨窗口执行Script, 将用户名传给登录页面
+                    api.execScript({
+                          name: 'login',
+                          frameName: 'login_frame',
+                          script: 'fnSetUsername(\"' + usernameValue + '\");'
+                      });
+                      api.closeWin();
+                  }
+              });
+        } else {
+            api.toast({
+                msg: '注册失败，用户名已被占用',
+                duration: 2000,
+                location: 'middle'
+            });
+        }
+    });
+}
+</script>
+</html>

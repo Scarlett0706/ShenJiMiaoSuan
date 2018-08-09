@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>讨论组</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <style>
+    html,
+    body{
+      height: 100%;
+      background-color: #eee;
+    }
+
+    header{
+      width: 100%;
+      height: 525x;
+      background-color: #008ef3
+    }
+
+    header h1{
+      width:100%;
+      height: 25px;
+      line-height: 25px;
+      text-align: center;
+      color:#fff;
+      font-size: 20px;
+    }
+
+    header .back {
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    height: 25px;
+    color:#fff;
+    font-size: 20px;
+    }
+
+    header .right {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 20px;
+        height: 20px;
+        background: url(../image/home_membercenter.png);
+        background-size: 20px 20px;
+        background-position: center center;
+        background-repeat: no-repeat;
+    }
+
+    nav {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-flex-flow: row;
+        flex-flow: row;
+        position: relative;
+        width: 100%;
+        height: 40px;
+        background-color: #3fccab;
+    }
+
+    nav .menu {
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+        flex: 1;
+        width: 100%;
+        height: 40px;
+        line-height: 40px;
+        font-size: 10px;
+        color: #ec1c24;
+        text-align: center;
+    }
+
+    nav .menu.selected {
+        font-size: 14px;
+        color: #fff;
+        font-weight: bolder;
+    }
+    section {
+        position: relative;
+        height: auto;
+        min-height: 400px;
+    }
+
+    section .item {
+        position: relative;
+        width: auto;
+        height: auto;
+        margin: 16px;
+    }
+
+    section .item .icon {
+        position: absolute;
+        top: 0;
+        width: 40px;
+        min-height: 40px;
+        height: 100%;
+        background-size: 40px 40px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        border-radius: 20px;
+    }
+
+    section .question .icon {
+        left: 0;
+        background-image: url(../image/user.png);
+    }
+
+    section .answer .icon {
+        right: 0;
+        background-image: url(../image/police.png)
+    }
+
+    section .item .content {
+        position: relative;
+        box-sizing: border-box;
+        width: 100%;
+        height: auto;
+        padding-left: 60px;
+        padding-right: 60px;
+    }
+
+    section .item .arrow {
+        position: absolute;
+        top: 50%;
+        margin-top: -5px;
+        width: 0;
+        height: 0px;
+    }
+
+    section .question .arrow {
+        left: 48px;
+        border-top: 5px solid;
+        border-bottom: 5px solid;
+        border-right: 20px solid;
+        border-color: transparent #fff transparent transparent;
+    }
+
+    section .answer .arrow {
+        right: 48px;
+        border-top: 5px solid;
+        border-bottom: 5px solid;
+        border-left: 20px solid;
+        border-color: transparent transparent transparent #ffa5d8;
+    }
+
+    section .item .text {
+        position: relative;
+        box-sizing: border-box;
+        width: 100%;
+        padding: 8px;
+        height: auto;
+        min-height: 40px;
+        font-size: 14px;
+        text-align: left;
+        line-height: 24px;
+        border-radius: 8px;
+    }
+
+    section .question .text {
+        background-color: #fff;
+    }
+
+    section .answer .text {
+        background-color: #ffa5d8;
+    }
+
+    .list{
+      background-color: #5691b9;
+      position:relative;
+      height:auto;
+      margin-bottom: 8px;
+      margin-left: 16px;
+      margin-right:16px;
+    }
+
+    .list.textarea{
+      position: relative;
+      height:auto;
+      background-color: #fdeca6;
+      min-height: 24px;
+    }
+    </style>
+  </head>
+  <body>
+    <header id="header">
+    <h1>讨论组</h1>
+     <div class="back" tapmode="highlight" onclick="api.closeWin()"> 返回  </div>
+     <div class="right" tapmode onclick="fnOpenPersonalCenterWin();"></div>
+      </header>
+      <nav id="nav">
+          <div class="menu selected" tapmode="selected" onclick="fnSetNavMenuIndex(0);">公告</div>
+          <div class="menu" tapmode="selected" onclick="fnSetNavMenuIndex(1);">报案人上传图片</div>
+          <div class="menu" tapmode="selected" onclick="fnSetNavMenuIndex(2);">警察上传图片</div>
+          <div class="menu" tapmode="selected" onclick="fnSetNavMenuIndex(3);">系统返回结果</div>
+        </nav>
+      <section>
+          <div class="item question">
+              <div class="icon"></div>
+              <div class="content">
+                  <div class="arrow"></div>
+                  <div class="text">破案进展如何？</div>
+              </div>
+          </div>
+          <div class="item answer">
+              <div class="icon"></div>
+              <div class="content">
+                  <div class="arrow"></div>
+                  <div class="text">已经找到犯罪嫌疑人。</div>
+              </div>
+          </div>
+        </section>
+        <div class="list">
+          <textarea id="input"  placeholder="消息" autofocus="true" cols="30">
+          </textarea>
+        </div>
+  </body>
+  <script type="text/javascript" src="../script/api.js"></script>
+  <script type="text/javascript">
+  apiready=function(){
+    menus = $api.domAll(nav, '.menu');
+  };
+  // 分类菜单点击的响应函数，切换Frame
+  function fnSetNavMenuIndex(index_) {
+      // 首先更新菜单选中状态
+      fnSetNavMenuSelected(index_);
+
+      // 切换FrameGroup中的当前Frame
+    if(index_==0){
+      api.openWin({
+          name: 'announcement',
+          url: './announcement.html',
+          pageParam: {
+              name: 'test'
+          }
+      });
+    }
+    if(index_==1){
+      api.openWin({
+          name: 'PicUploadByUser',
+          url: './PicUploadByUser.html',
+          pageParam: {
+              name: 'test'
+          }
+      });
+    }
+    if(index_==2){
+      api.openWin({
+          name: 'PicUploadedByPolice',
+          url: './PicUploadedByPolice.html',
+          pageParam: {
+              name: 'test'
+          }
+      });
+    }
+    if(index_==3){
+      api.openWin({
+          name: 'analysisResult',
+          url: './analysisResult.html',
+          pageParam: {
+              name: 'test'
+          }
+      });
+
+    }
+  }
+
+  // 更新分类菜单的选中状态
+  function fnSetNavMenuSelected(index_) {
+      for (var i = 0; i < menus.length; i++) {
+          if (index_ == i) {
+              $api.addCls(menus[i], 'selected');
+          } else {
+              $api.removeCls(menus[i], 'selected');
+          }
+      }
+  }
+  </script>
